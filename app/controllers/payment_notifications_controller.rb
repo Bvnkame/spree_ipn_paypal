@@ -10,7 +10,7 @@ module Spree
         # check that receiverEmail is your Primary PayPal email
         # check that paymentAmount/paymentCurrency are correct
         # process payment
-        if params[:payment_status] == "Completed" && params[:txnId]
+        # if params[:payment_status] == "Completed" && params[:txnId]
       when "INVALID"
         # log for investigation
       else
