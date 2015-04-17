@@ -10,6 +10,7 @@ module Spree
         # check that receiverEmail is your Primary PayPal email
         # check that paymentAmount/paymentCurrency are correct
         # process payment
+        if params[:payment_status] == "Completed" && params[:txnId]
       when "INVALID"
         # log for investigation
       else
@@ -19,11 +20,6 @@ module Spree
     end 
     protected 
     def validate_IPN_notification(raw)
-
-      p "Notificaiont callback"
-      p raw
-      p "end callback"
-
       uri = URI.parse('https://www.paypal.com/cgi-bin/webscr?cmd=_notify-validate')
       http = Net::HTTP.new(uri.host, uri.port)
       http.open_timeout = 60
@@ -34,6 +30,11 @@ module Spree
        'Content-Length' => "#{raw.size}",
        'User-Agent' => "My custom user agent"
        ).body
+
+    end
+
+    def check_exist_txnId(txnId)
+      
     end
   end
 end
