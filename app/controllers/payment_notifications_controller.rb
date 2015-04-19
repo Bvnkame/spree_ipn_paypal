@@ -8,7 +8,8 @@ module Spree
       when "VERIFIED"
         # Get Infor custom from front-end
         custom = Base64.decode64(params[:custom]).split(',')
-
+        @user = Spree::User.find_by(email: custom[0])
+        
         # Save Database Paypal Transaction
         if Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
           trans = Prepaid::PaypalTransaction.find_by(txn_id: params[:txn_id])
@@ -47,7 +48,7 @@ module Spree
                   update_account = current_account + money
                   @user_account.update(account: update_account)
                 else
-                  @user_account = Prepaid::UserAccount.create(:user_id => @user.id, :account => money)
+                  Prepaid::UserAccount.create(:user_id => @user.id, :account => money)
                 end
               else
                 p "account not correct"
