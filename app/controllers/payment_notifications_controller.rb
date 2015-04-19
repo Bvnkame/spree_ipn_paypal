@@ -21,7 +21,7 @@ module Spree
                         mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
                         payment_status: params[:payment_status], pending_reason: params[:pending_reason],
                         protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
-                        custom: custom[2])
+                        payment_type: params[:payment_type], custom: custom[2])
         else
           Prepaid::PaypalTransaction.create(txn_id: params[:txn_id],
               receiver_email: params[:receiver_email],
@@ -30,7 +30,7 @@ module Spree
               mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
               payment_status: params[:payment_status], pending_reason: params[:pending_reason],
               protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
-              custom: custom[2])
+              payment_type: params[:payment_type], custom: custom[2])
         end
 
 
@@ -38,18 +38,23 @@ module Spree
         # if params[:payment_status] == "Completed"
           # check that txnId has not been previously processed
           unless Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
+            p "vao unless txn_id"
             # check that receiverEmail is your Primary PayPal email
             if Prepaid::PaypalEmail.exists?(:email => params[:receiver_email])
+              p "vao exist mail"
               # check that paymentAmount/paymentCurrency are correct
               money = Prepaid::PrepaidCategory.find(1).price
 
               if check_account_correct(params[:mc_gross], custom[1], money)
+                p "vao check true"
                 @user_account = @user.user_account
                 if @user_account
+                  p " cos user accout"
                   current_account = @user_account.account
                   update_account = current_account + money
                   @user_account.update(account: update_account)
                 else
+                  p "ko cos "
                   Prepaid::UserAccount.create(:user_id => @user.id, :account => money)
                 end
               else
