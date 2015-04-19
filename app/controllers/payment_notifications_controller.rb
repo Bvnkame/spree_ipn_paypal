@@ -6,11 +6,20 @@ module Spree
       response = validate_IPN_notification(request.raw_post)
       case response
       when "VERIFIED"
-        p Base64.decode64(params[:custom])
-        p "==============fjdsakfjaksdfjasdkfjaksdfjaksdjfkasdjfk ==========="
         # check that paymentStatus=Completed
-        # check that txnId has not been previously processed
-        # check that receiverEmail is your Primary PayPal email
+        if params[:payment_status] == "Completed"
+
+          # check that txnId has not been previously processed
+          unless Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
+            if Prepaid::PaypalEmail.exists?(:email => params[:receiver_email])
+              
+              custom = Base64.decode64(params[:custom]).split(',')
+
+              if check_account_correct(params[:mc_gross], custom[1], custom[3])
+              end
+            end
+          end
+        end
         # check that paymentAmount/paymentCurrency are correct
         # process payment
         # if params[:payment_status] == "Completed" && params[:txnId]
@@ -39,8 +48,15 @@ module Spree
 
     end
 
-    def check_exist_txnId(txnId)
-      
+    def check_account_correct(mc_gross, rate, prepaid_category_id)
+      money = Prepaid::Category.find(prepaid_category_id).price
+      trans_money = mc_gross * rate
+      p "money"
+      p money
+      p "trans djfkasd money"
+      p trans_money
+
+
     end
   end
 end
