@@ -9,7 +9,9 @@ module Spree
         # Get Infor custom from front-end
         custom = Base64.decode64(params[:custom]).split(',')
         @user = Spree::User.find_by(email: custom[0])
-        
+
+        logger.debug @user
+
         # Save Database Paypal Transaction
         if Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
           trans = Prepaid::PaypalTransaction.find_by(txn_id: params[:txn_id])
@@ -21,7 +23,7 @@ module Spree
                         protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
                         custom: custom[2])
         else
-          Prepaid::PaypalTransaction.create(txn_id: params[:txn_id]),
+          Prepaid::PaypalTransaction.create(txn_id: params[:txn_id],
               receiver_email: params[:receiver_email],
               user_id: @user.id, payer_email: params[:payer_email],
               mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
@@ -70,6 +72,7 @@ module Spree
       p "cham het"
       render :nothing => true
     end 
+
     protected 
     def validate_IPN_notification(raw)
       uri = URI.parse('https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_notify-validate')
