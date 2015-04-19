@@ -4,7 +4,7 @@ class CreateUserAccounts < ActiveRecord::Migration
 
     	t.integer :user_id
     	t.integer :account
-    	t.string :currency, :default => "USD"
+    	t.string :currency, :default => "VND"
 
       t.timestamps
     end
