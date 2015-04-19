@@ -5,6 +5,8 @@ module Spree
       response = validate_IPN_notification(request.raw_post)
       case response
       when "VERIFIED"
+        p request.raw_post
+        p request.raw_post[:custom]
         # check that paymentStatus=Completed
         # check that txnId has not been previously processed
         # check that receiverEmail is your Primary PayPal email
