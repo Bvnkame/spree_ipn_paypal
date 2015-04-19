@@ -16,9 +16,17 @@ module Spree
               custom = Base64.decode64(params[:custom]).split(',')
 
               if check_account_correct(params[:mc_gross], custom[1], custom[3])
+              else
+                p "account not correct"
               end
+            else
+              p "email not of business"
             end
+          else 
+            p "transaction exist"
           end
+        else 
+          p "payment status not completed"
         end
         # check that paymentAmount/paymentCurrency are correct
         # process payment
