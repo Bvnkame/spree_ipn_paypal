@@ -38,8 +38,17 @@ module Spree
             # check that receiverEmail is your Primary PayPal email
             if Prepaid::PaypalEmail.exists?(:email => params[:receiver_email])
               # check that paymentAmount/paymentCurrency are correct
-              if check_account_correct(params[:mc_gross], custom[1], custom[3])
-                # current_account = @user.Prepaid::UserAccount.find_by(user_id)
+              money = Prepaid::PrepaidCategory.find(1).price
+
+              if check_account_correct(params[:mc_gross], custom[1], money)
+                @user_account = @user.user_account
+                if @user_account
+                  current_account = @user_account.account
+                  update_account = current_account + money
+                  @user_account.update(account: update_account)
+                else
+                  @user_account = Prepaid::UserAccount.create(:user_id => @user.id, :account => money)
+                end
               else
                 p "account not correct"
               end
@@ -48,7 +57,7 @@ module Spree
             end
           end
         else 
-          p "payment status not completed"
+          p "payment status not completed" s
         end
       when "INVALID"
         p "vao invalid"
@@ -75,9 +84,7 @@ module Spree
 
     end
 
-    def check_account_correct(mc_gross, rate, prepaid_category_id)
-      # money = Prepaid::PrepaidCategory.find(prepaid_category_id).price
-      money = Prepaid::PrepaidCategory.find(1).price
+    def check_account_correct(mc_gross, rate, money)
       up_scope = money + 1000
       down_scope = money - 1000
 
