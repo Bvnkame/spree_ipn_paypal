@@ -16,6 +16,10 @@ module Spree
               custom = Base64.decode64(params[:custom]).split(',')
 
               if check_account_correct(params[:mc_gross], custom[1], custom[3])
+    #           trans = Prepaid::PaypalTransaction.new(quantity: quantity,
+    #   box: variant,
+    #   options: opts)
+    # line_item.save!
               else
                 p "account not correct"
               end
@@ -59,14 +63,15 @@ module Spree
     def check_account_correct(mc_gross, rate, prepaid_category_id)
       # money = Prepaid::PrepaidCategory.find(prepaid_category_id).price
       money = Prepaid::PrepaidCategory.find(1).price
-      
+      up_scope = money + 1000
+      down_scope = money - 1000
+
       trans_money = mc_gross.to_f * rate.to_f
-      p "money"
-      p money
-      p "trans djfkasd money"
-      p trans_money
-
-
+      if trans_money > down_scope && trans_money < up_scope
+        return true
+      else
+        return false
+      end
     end
   end
 end

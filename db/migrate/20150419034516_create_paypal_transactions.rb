@@ -9,7 +9,7 @@ class CreatePaypalTransactions < ActiveRecord::Migration
     	t.integer :mc_gross
     	t.integer :mc_fee
     	t.string :mc_currency
-    	t.integer :perpaid_category_id
+    	t.integer :prepaid_category_id
     	t.datetime :payment_date
     	t.string :payment_type
     	t.string :payment_status
