@@ -32,7 +32,7 @@ module Spree
 
 
         # check that paymentStatus=Completed
-        if params[:payment_status] == "Completed"
+        # if params[:payment_status] == "Completed"
           # check that txnId has not been previously processed
           unless Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
             # check that receiverEmail is your Primary PayPal email
@@ -56,9 +56,9 @@ module Spree
               p "email not of business"
             end
           end
-        else 
-          p "payment status not completed" s
-        end
+        # else 
+        #   p "payment status not completed" s
+        # end
       when "INVALID"
         p "vao invalid"
         # log for investigation
