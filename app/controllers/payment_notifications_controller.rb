@@ -7,7 +7,7 @@ module Spree
       case response
       when "VERIFIED"
         # check that paymentStatus=Completed
-        if params[:payment_status] == "Completed"
+        # if params[:payment_status] == "Completed"
 
           # check that txnId has not been previously processed
           unless Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
@@ -25,9 +25,9 @@ module Spree
           else 
             p "transaction exist"
           end
-        else 
-          p "payment status not completed"
-        end
+        # else 
+        #   p "payment status not completed"
+        # end
         # check that paymentAmount/paymentCurrency are correct
         # process payment
         # if params[:payment_status] == "Completed" && params[:txnId]
