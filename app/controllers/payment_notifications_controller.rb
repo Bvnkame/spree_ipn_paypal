@@ -3,10 +3,14 @@ module Spree
     protect_from_forgery :except => [:create] #Otherwise the request from PayPal wouldn't make it to the controller
     def create
       response = validate_IPN_notification(request.raw_post)
+      p "toi response"
       case response
       when "VERIFIED"
+        p "vao verified"
         p request.raw_post
+        p "fjdsakfjaksdfjasdkfjaksdfjaksdjfkasdjfk ==========="
         p request.raw_post[:custom]
+        p "==============fjdsakfjaksdfjasdkfjaksdfjaksdjfkasdjfk ==========="
         # check that paymentStatus=Completed
         # check that txnId has not been previously processed
         # check that receiverEmail is your Primary PayPal email
@@ -14,10 +18,13 @@ module Spree
         # process payment
         # if params[:payment_status] == "Completed" && params[:txnId]
       when "INVALID"
+        p "vao invalid"
         # log for investigation
       else
+        p "vao error"
         # error
       end
+        p "cham het"
       render :nothing => true
     end 
     protected 
