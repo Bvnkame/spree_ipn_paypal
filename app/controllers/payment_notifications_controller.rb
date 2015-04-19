@@ -9,7 +9,7 @@ module Spree
         p "vao verified"
         p request.raw_post
         p "fjdsakfjaksdfjasdkfjaksdfjaksdjfkasdjfk ==========="
-        p request.raw_post[:custom]
+        p params[:custom]
         p "==============fjdsakfjaksdfjasdkfjaksdfjaksdjfkasdjfk ==========="
         # check that paymentStatus=Completed
         # check that txnId has not been previously processed
