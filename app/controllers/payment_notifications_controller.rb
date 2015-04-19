@@ -10,31 +10,22 @@ module Spree
         custom = Base64.decode64(params[:custom]).split(',')
         @user = Spree::User.find_by(email: custom[0])
 
-        logger.debug @user
-
-
-
         # check that paymentStatus=Completed
         # if params[:payment_status] == "Completed"
           # check that txnId has not been previously processed
           unless Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id], :payment_status => "Completed")
-            p "vao unless txn_id"
             # check that receiverEmail is your Primary PayPal email
             if Prepaid::PaypalEmail.exists?(:email => params[:receiver_email])
-              p "vao exist mail"
               # check that paymentAmount/paymentCurrency are correct
               money = Prepaid::PrepaidCategory.find(1).price
 
               if check_account_correct(params[:mc_gross], custom[1], money)
-                p "vao check true"
                 @user_account = @user.user_account
                 if @user_account
-                  p " cos user accout"
                   current_account = @user_account.account
                   update_account = current_account + money
                   @user_account.update(account: update_account)
                 else
-                  p "ko cos "
                   Prepaid::UserAccount.create(:user_id => @user.id, :account => money)
                 end
               else
@@ -74,13 +65,10 @@ module Spree
 
 
       when "INVALID"
-        p "vao invalid"
         # log for investigation
       else
-        p "vao error"
         # error
       end
-      p "cham het"
       render :nothing => true
     end 
 
