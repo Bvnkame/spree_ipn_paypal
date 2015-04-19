@@ -57,7 +57,9 @@ module Spree
     end
 
     def check_account_correct(mc_gross, rate, prepaid_category_id)
-      money = Prepaid::PrepaidCategory.find(prepaid_category_id).price
+      # money = Prepaid::PrepaidCategory.find(prepaid_category_id).price
+      money = Prepaid::PrepaidCategory.find(1).price
+      
       trans_money = mc_gross * rate
       p "money"
       p money
