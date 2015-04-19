@@ -2,7 +2,7 @@ class CreatePaypalTransactions < ActiveRecord::Migration
   def change
     create_table :paypal_transactions do |t|
 
-    	t.string :txnId
+    	t.string :txn_id
     	t.string :receiver_email
     	t.integer :user_id
     	t.string :payer_email
