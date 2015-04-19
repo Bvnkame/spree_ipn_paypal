@@ -12,32 +12,12 @@ module Spree
 
         logger.debug @user
 
-        # Save Database Paypal Transaction
-        if Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
-          trans = Prepaid::PaypalTransaction.find_by(txn_id: params[:txn_id])
-          trans.update(receiver_email: params[:receiver_email],
-                        user_id: @user.id, payer_email: params[:payer_email],
-                        mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
-                        mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
-                        payment_status: params[:payment_status], pending_reason: params[:pending_reason],
-                        protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
-                        payment_type: params[:payment_type], custom: custom[2])
-        else
-          Prepaid::PaypalTransaction.create(txn_id: params[:txn_id],
-              receiver_email: params[:receiver_email],
-              user_id: @user.id, payer_email: params[:payer_email],
-              mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
-              mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
-              payment_status: params[:payment_status], pending_reason: params[:pending_reason],
-              protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
-              payment_type: params[:payment_type], custom: custom[2])
-        end
 
 
         # check that paymentStatus=Completed
         # if params[:payment_status] == "Completed"
           # check that txnId has not been previously processed
-          unless Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
+          unless Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id], :payment_status => "Completed")
             p "vao unless txn_id"
             # check that receiverEmail is your Primary PayPal email
             if Prepaid::PaypalEmail.exists?(:email => params[:receiver_email])
@@ -67,6 +47,32 @@ module Spree
         # else 
         #   p "payment status not completed" s
         # end
+
+        # Save Database Paypal Transaction
+        if Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
+          trans = Prepaid::PaypalTransaction.find_by(txn_id: params[:txn_id])
+          trans.update(receiver_email: params[:receiver_email],
+                        user_id: @user.id, payer_email: params[:payer_email],
+                        mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
+                        mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
+                        payment_status: params[:payment_status], pending_reason: params[:pending_reason],
+                        protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
+                        payment_type: params[:payment_type], custom: custom[2])
+        else
+          Prepaid::PaypalTransaction.create(txn_id: params[:txn_id],
+              receiver_email: params[:receiver_email],
+              user_id: @user.id, payer_email: params[:payer_email],
+              mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
+              mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
+              payment_status: params[:payment_status], pending_reason: params[:pending_reason],
+              protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
+              payment_type: params[:payment_type], custom: custom[2])
+        end
+
+
+
+
+
       when "INVALID"
         p "vao invalid"
         # log for investigation
