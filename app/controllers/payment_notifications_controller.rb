@@ -1,15 +1,12 @@
+require 'base64'
 module Spree
   class PaymentNotificationsController < ApplicationController
     protect_from_forgery :except => [:create] #Otherwise the request from PayPal wouldn't make it to the controller
     def create
       response = validate_IPN_notification(request.raw_post)
-      p "toi response"
       case response
       when "VERIFIED"
-        p "vao verified"
-        p request.raw_post
-        p "fjdsakfjaksdfjasdkfjaksdfjaksdjfkasdjfk ==========="
-        p params[:custom]
+        p Base64.decode64(params[:custom])
         p "==============fjdsakfjaksdfjasdkfjaksdfjaksdjfkasdjfk ==========="
         # check that paymentStatus=Completed
         # check that txnId has not been previously processed
