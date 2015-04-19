@@ -6,35 +6,50 @@ module Spree
       response = validate_IPN_notification(request.raw_post)
       case response
       when "VERIFIED"
-        # check that paymentStatus=Completed
-        # if params[:payment_status] == "Completed"
+        # Get Infor custom from front-end
+        custom = Base64.decode64(params[:custom]).split(',')
 
+        # Save Database Paypal Transaction
+        if Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
+          trans = Prepaid::PaypalTransaction.find_by(txn_id: params[:txn_id])
+          trans.update(receiver_email: params[:receiver_email],
+                        user_id: @user.id, payer_email: params[:payer_email],
+                        mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
+                        mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
+                        payment_status: params[:payment_status], pending_reason: params[:pending_reason],
+                        protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
+                        custom: custom[2])
+        else
+          Prepaid::PaypalTransaction.create(txn_id: params[:txn_id]),
+              receiver_email: params[:receiver_email],
+              user_id: @user.id, payer_email: params[:payer_email],
+              mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
+              mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
+              payment_status: params[:payment_status], pending_reason: params[:pending_reason],
+              protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
+              custom: custom[2])
+        end
+
+
+        # check that paymentStatus=Completed
+        if params[:payment_status] == "Completed"
           # check that txnId has not been previously processed
           unless Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
+            # check that receiverEmail is your Primary PayPal email
             if Prepaid::PaypalEmail.exists?(:email => params[:receiver_email])
-              
-              custom = Base64.decode64(params[:custom]).split(',')
-
+              # check that paymentAmount/paymentCurrency are correct
               if check_account_correct(params[:mc_gross], custom[1], custom[3])
-    #           trans = Prepaid::PaypalTransaction.new(quantity: quantity,
-    #   box: variant,
-    #   options: opts)
-    # line_item.save!
+                # current_account = @user.Prepaid::UserAccount.find_by(user_id)
               else
                 p "account not correct"
               end
             else
               p "email not of business"
             end
-          else 
-            p "transaction exist"
           end
-        # else 
-        #   p "payment status not completed"
-        # end
-        # check that paymentAmount/paymentCurrency are correct
-        # process payment
-        # if params[:payment_status] == "Completed" && params[:txnId]
+        else 
+          p "payment status not completed"
+        end
       when "INVALID"
         p "vao invalid"
         # log for investigation
@@ -42,7 +57,7 @@ module Spree
         p "vao error"
         # error
       end
-        p "cham het"
+      p "cham het"
       render :nothing => true
     end 
     protected 
