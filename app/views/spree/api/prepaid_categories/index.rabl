@@ -1,2 +1,4 @@
-object @prepaid_categories
-attributes :id, :type_name, :price, :currency, :bonus_price, :bonus_currency, :shipping_type
+object false
+child @prepaid_categories => :prepaid_categories do
+  extends "spree/api/prepaid_categories/show"
+end
