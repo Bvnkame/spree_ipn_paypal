@@ -11,19 +11,19 @@ module Spree
         @user = Spree::User.find_by(email: custom[0])
 
         # check that paymentStatus=Completed
-        # if params[:payment_status] == "Completed"
+        if params[:payment_status] == "Completed"
           # check that txnId has not been previously processed
           unless Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id], :payment_status => "Completed")
             # check that receiverEmail is your Primary PayPal email
             if Prepaid::PaypalEmail.exists?(:email => params[:receiver_email])
               # check that paymentAmount/paymentCurrency are correct
-              money = Prepaid::PrepaidCategory.find(1).price
+              @prepaid_category = Prepaid::PrepaidCategory.find(1)
 
-              if check_account_correct(params[:mc_gross], custom[1], money)
+              if check_account_correct(params[:mc_gross], custom[1], @prepaid_category.price)
                 @user_account = @user.user_account
                 if @user_account
                   current_account = @user_account.account
-                  update_account = current_account + money
+                  update_account = current_account + money + @prepaid_category.bonus_price
                   @user_account.update(account: update_account)
                 else
                   Prepaid::UserAccount.create(:user_id => @user.id, :account => money)
@@ -35,9 +35,9 @@ module Spree
               p "email not of business"
             end
           end
-        # else 
-        #   p "payment status not completed" s
-        # end
+        else 
+          p "payment status not completed" s
+        end
 
         # Save Database Paypal Transaction
         if Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
