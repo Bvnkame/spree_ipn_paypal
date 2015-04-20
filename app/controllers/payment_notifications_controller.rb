@@ -17,7 +17,7 @@ module Spree
             # check that receiverEmail is your Primary PayPal email
             if Prepaid::PaypalEmail.exists?(:email => params[:receiver_email])
               # check that paymentAmount/paymentCurrency are correct
-              @prepaid_category = Prepaid::PrepaidCategory.find(1)
+              @prepaid_category = Prepaid::PrepaidCategory.find(custom[3])
 
               if check_account_correct(params[:mc_gross], custom[1], @prepaid_category.price)
                 @user_account = @user.user_account
@@ -36,7 +36,7 @@ module Spree
             end
           end
         else 
-          p "payment status not completed" s
+          p "payment status not completed" 
         end
 
         # Save Database Paypal Transaction
