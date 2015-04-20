@@ -3,9 +3,8 @@ module Spree
 		class PaymentsController < BaseApiController
 			def check_result_transaction
 				p params[:trans]
-				p params[:user_id]
 
-				@paypaltransaction = Prepaid::PaypalTransaction.where(:trans => params[:trans], :user_id => params[:user_id]).first
+				@paypaltransaction = Prepaid::PaypalTransaction.where(:trans => params[:trans], :user_id => current_api_user.id).first
 				if @paypaltransaction
 					render "spree/api/payment/show", status: 200
 				else
