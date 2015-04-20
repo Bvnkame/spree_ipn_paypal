@@ -23,10 +23,11 @@ module Spree
                 @user_account = @user.user_account
                 if @user_account
                   current_account = @user_account.account
-                  update_account = current_account + money + @prepaid_category.bonus_price
+                  update_account = current_account + @prepaid_category.price + @prepaid_category.bonus_price
                   @user_account.update(account: update_account)
                 else
-                  Prepaid::UserAccount.create(:user_id => @user.id, :account => money)
+                  update_account = @prepaid_category.price + @prepaid_category.bonus_price
+                  Prepaid::UserAccount.create(:user_id => @user.id, :account => update_account)
                 end
               else
                 p "account not correct"
