@@ -6,7 +6,7 @@ module Spree
 
 				@paypaltransaction = Prepaid::PaypalTransaction.where(:custom => params[:trans], :user_id => current_api_user.id).first
 				if @paypaltransaction
-					render "spree/api/payment/show", status: 200
+					render "spree/api/payments/show", status: 200
 				else
 					@status = [ { "messages" => "Not Receive Reponse."}]
 					render "spree/api/logger/log", status: 404
