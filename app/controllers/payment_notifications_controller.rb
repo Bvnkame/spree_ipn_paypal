@@ -30,45 +30,40 @@ module Spree
                   Prepaid::UserAccount.create(:user_id => @user.id, :account => update_account)
                 end
               else
-                p "account not correct"
+                Mailer::UserMailer.error_payment_mail(@user, "wrong_account", @prepaid_category.price, params)
               end
             else
-              p "email not of business"
+              Mailer::UserMailer.error_payment_mail(@user, "wrong email", 0, params)
             end
           end
-        else 
-          p "payment status not completed" 
         end
 
         # Save Database Paypal Transaction
         if Prepaid::PaypalTransaction.exists?(:txn_id => params[:txn_id])
           trans = Prepaid::PaypalTransaction.find_by(txn_id: params[:txn_id])
           trans.update(receiver_email: params[:receiver_email],
-                        user_id: @user.id, payer_email: params[:payer_email],
-                        mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
-                        mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
-                        payment_status: params[:payment_status], pending_reason: params[:pending_reason],
-                        protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
-                        payment_type: params[:payment_type], custom: custom[2])
+            user_id: @user.id, payer_email: params[:payer_email],
+            mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
+            mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
+            payment_status: params[:payment_status], pending_reason: params[:pending_reason],
+            protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
+            payment_type: params[:payment_type], custom: custom[2])
         else
           Prepaid::PaypalTransaction.create(txn_id: params[:txn_id],
-              receiver_email: params[:receiver_email],
-              user_id: @user.id, payer_email: params[:payer_email],
-              mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
-              mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
-              payment_status: params[:payment_status], pending_reason: params[:pending_reason],
-              protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
-              payment_type: params[:payment_type], custom: custom[2])
+            receiver_email: params[:receiver_email],
+            user_id: @user.id, payer_email: params[:payer_email],
+            mc_gross: params[:mc_gross], mc_fee: params[:mc_fee],
+            mc_currency: params[:mc_currency], prepaid_category_id: custom[3],
+            payment_status: params[:payment_status], pending_reason: params[:pending_reason],
+            protection_eligibility: params[:protection_eligibility], payment_date: params[:payment_date],
+            payment_type: params[:payment_type], custom: custom[2])
         end
-
-
-
-
 
       when "INVALID"
         # log for investigation
+        logger.warn "IPN Message is INVALID"
       else
-        # error
+        logger.warn "IPN Message is error"
       end
       render :nothing => true
     end 
