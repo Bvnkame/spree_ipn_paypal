@@ -5,5 +5,5 @@ Spree::Core::Engine.routes.draw do
 	end
 
   post '/paypal', :to => "payment_notifications#create"
-  get "/api/transactions/:trans" => "api/payments#check_result_transaction"	
+  get "/api/transactions/:trans" => "api/paypal_payments#check_result_transaction"	
 end
