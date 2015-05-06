@@ -3,6 +3,7 @@ module Spree
   class PaymentNotificationsController < ApplicationController
     protect_from_forgery :except => [:create] #Otherwise the request from PayPal wouldn't make it to the controller
     def create
+      tam = Time.now
       response = validate_IPN_notification(request.raw_post)
       case response
       when "VERIFIED"
@@ -65,6 +66,13 @@ module Spree
       else
         logger.warn "IPN Message is error"
       end
+
+      tu = Time.now
+      p "Time dau"
+      p tam
+      p "Time cuoi"
+      p tu
+      p "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111fjaksdjfaskdfjaskfjaskdfjaskdfjaskdfajsdfkljsdfkasfkasdjfaksdfjaskdlfjasdfklasdjfkadsjfk ldfkajskfajsdfklasjdfaklsdfjaksldfdffafasdfasdfasdfa"
       render :nothing => true
     end 
 
