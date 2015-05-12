@@ -1,11 +1,10 @@
 Spree::Api::PaymentsController.class_eval do
 
-	def update_status
+	def update_pay
 		@order = Spree::Order.find_by(number: params[:order_number])
 		authorize! :update, @order
 
 		@payment = Spree::Payment.find_by(order_id: @order.id)
-
 		if payment_params[:status].downcase == "complete"
 			@payment.update(is_pay: TRUE)
 		else
@@ -18,9 +17,7 @@ Spree::Api::PaymentsController.class_eval do
 
 	private
 	def payment_params
-		params.permit( :payment => [
-			:status
-			])
+		params.require(:payment).permit(:status)
 	end
 
 end
